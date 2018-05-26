@@ -11,7 +11,7 @@ class Detail extends React.Component {
     this.state = {
       currency: {},
       error: '',
-      loading: false,
+      loading: true,
     }
   }
 
@@ -30,11 +30,12 @@ class Detail extends React.Component {
   }
 
   fetchCurrency(currencyId) {
-    this.setState({ loading: true });
+    let timeout = setTimeout(() => this.setState({ loading: true}), 200);
 
     fetch(`${API_URL}/cryptocurrencies/${currencyId}`)
       .then(handleResponse)
       .then((currency) => {
+        clearTimeout(timeout);
         this.setState({
           currency,
           error: '',
@@ -42,6 +43,7 @@ class Detail extends React.Component {
         });
       })
       .catch((error) => {
+        clearTimeout(timeout);
         this.setState({
           error: error.errorMessage,
           loading: false,

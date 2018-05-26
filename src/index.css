@@ -38,3 +38,10 @@ body {
 input::-ms-clear {
   display: none;
 }
+
+/* IPhone 5 */
+@media (max-width: 330px) {
+  body {
+    font-size: 12px;
+  }
+}

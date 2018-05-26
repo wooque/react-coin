@@ -21,81 +21,70 @@ class Search extends React.Component {
 
     this.handleRedirect = this.handleRedirect.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.finish = this.finish.bind(this);
+    this.clearExecution = this.clearExecution.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
   }
 
   handleBlur(e) {
-    if (this.state.execution) {
-      clearTimeout(this.state.execution);
-    }
-    if (this.state.req) {
-      this.state.req.abort();
-    }
-    this.setState({
-      loading: false,
-      req: null,
-      execution: null,
-      focus: false,
-    });
+    this.setState({focus: false, loading: false});
   }
 
   handleFocus(e) {
     this.setState({focus: true});
   }
 
+  finish(results) {
+    this.setState({
+      searchResults: results,
+      loading: false,
+      req: null,
+    });
+  }
+
+  clearExecution() {
+    if (this.state.execution) {
+      clearTimeout(this.state.execution);
+    }
+    this.setState({execution: null});
+  }
+
   handleChange(e) {
     const searchQuery = e.target.value;
-
     this.setState({ searchQuery });
 
-    if (!searchQuery) {
-      this.setState({loading: false});
-    }
-
     if (this.state.execution) {
-      return
+      return false;
     }
 
     if (this.state.req) {
       this.state.req.abort();
-      this.setState({loading: false});
+      this.finish([]);
     }
-
     this.setState({ loading: true });
 
-    let that = this;
     let execution = setTimeout(() => {
-      if (that.state.execution) {
-        clearTimeout(that.state.execution);
-      }
-      that.setState({execution: null});
-      let searchQuery = that.state.searchQuery;
+      this.clearExecution();
+      let searchQuery = this.state.searchQuery;
       if (!searchQuery) {
-        that.setState({
-          loading: false,
-          req: null,
-        });
+        this.finish([]);
         return;
       }
       let {promise, req} = ajax(`${API_URL}/autocomplete?searchQuery=${searchQuery}`);
-      that.setState({req});
-      promise.then((result) => {
-        that.setState({
-            searchResults: result,
-            loading: false,
-            req: null,
-          });
-        });
+      this.setState({req});
+      promise.then(this.finish);
     }, 300);
     this.setState({execution})
   }
 
   handleRedirect(currencyId) {
-    this.setState({
-      searchQuery: '',
-      searchResults: [],
-    });
+    this.clearExecution();
+    if (this.state.req) {
+      this.state.req.abort();
+    }
+    this.finish([]);
+    this.setState({searchQuery: ''});
 
     this.props.history.push(`/currency/${currencyId}`);
   }

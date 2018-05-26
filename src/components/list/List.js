@@ -77,7 +77,7 @@ class List extends React.Component {
 
     return (
       <div>
-        {loading && <div className="loading-container" style={{height: "675px"}}><Loading wait={false}/></div>}
+        {loading && <div className="loading-container" style={{height: "660px"}}><Loading wait={false}/></div>}
         {!loading && <Table currencies={currencies} />}
 
         <Pagination

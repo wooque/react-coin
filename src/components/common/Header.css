@@ -9,14 +9,16 @@
 }
 
 .Header-logo {
-  position: absolute;
-  top: 30px;
+  position: relative;
   left: 20px;
   width: 90px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 @media (max-width: 700px) {
   .Header-logo {
-    display: none;
+    left: 0;
+    padding: 0 0 0 20px;
   }
 }

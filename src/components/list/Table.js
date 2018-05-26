@@ -12,9 +12,10 @@ const Table = (props) => {
       <table className="Table">
         <thead className="Table-head">
           <tr>
+            <th>#</th>
             <th>Cryptocurrency</th>
             <th>Price</th>
-            <th>Market Cap</th>
+            <th className="Table-marketCap">Market Cap</th>
             <th>24H Change</th>
           </tr>
         </thead>
@@ -26,13 +27,13 @@ const Table = (props) => {
             >
               <td>
                 <span className="Table-rank">{currency.rank}</span>
-                {currency.name}
               </td>
+              <td>{currency.name}</td>
               <td>
                 <span className="Table-dollar">$</span>
                 {currency.price}
               </td>
-              <td>
+              <td className="Table-marketCap">
                 <span className="Table-dollar">$</span>
                 {currency.marketCap}
               </td>

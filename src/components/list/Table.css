@@ -34,11 +34,24 @@
 
 .Table-rank {
   color: #9cb3c9;
-  margin-right: 18px;
   font-size: 12px;
 }
 
 .Table-dollar {
   color: #9cb3c9;
   margin-right: 6px;
+}
+
+@media (max-width: 700px) {
+  .Table-marketCap {
+    display: none;
+  }
+
+  .Table-head tr th {
+    padding: 10px 12px;
+  }
+
+  .Table-body tr td {
+    padding: 14px 10px;
+  }
 }
