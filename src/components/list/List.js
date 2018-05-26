@@ -15,7 +15,7 @@ class List extends React.Component {
       totalPages: 0,
       perPage: 10,
       currencies: [],
-      loading: true,
+      loading: false,
       error: '',
     };
 
@@ -73,6 +73,10 @@ class List extends React.Component {
 
     if (error) {
       return <div className="error">{error}</div>
+    }
+
+    if (!currencies.length) {
+      return ''
     }
 
     return (

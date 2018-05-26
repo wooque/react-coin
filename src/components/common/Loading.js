@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import './Loading.css';
 
 class Loading extends React.Component {
@@ -38,11 +37,6 @@ class Loading extends React.Component {
     );
   }
 }
-
-Loading.propTypes = {
-  width: PropTypes.string,
-  height: PropTypes.string,
-};
 
 Loading.defaultProps = {
   width: '28px',

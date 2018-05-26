@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { ajax } from '../../helpers.js';
 import Loading from '../common/Loading';
@@ -153,10 +152,6 @@ class Search extends React.Component {
       </div>
     );
   }
-}
-
-Search.propTypes = {
-  history: PropTypes.object.isRequired,
 }
 
 export default withRouter(Search);

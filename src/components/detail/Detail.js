@@ -11,7 +11,7 @@ class Detail extends React.Component {
     this.state = {
       currency: {},
       error: '',
-      loading: true,
+      loading: false,
     }
   }
 
@@ -55,11 +55,15 @@ class Detail extends React.Component {
     const { currency, loading, error } = this.state;
 
     if (loading) {
-      return <div className="loading-container"><Loading /></div>
+      return <div className="loading-container"><Loading wait={false}/></div>
     }
 
     if (error) {
       return <div className="error">{error}</div>
+    }
+
+    if (!currency.symbol) {
+      return '';
     }
 
     return (
