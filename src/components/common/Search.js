@@ -72,6 +72,9 @@ class Search extends React.Component {
   }
 
   handleRedirect(event, currencyId) {
+    if (event.ctrlKey) {
+      return;
+    }
     event.preventDefault();
     this.clearExecution();
     if (this.state.req) {
