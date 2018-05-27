@@ -6,8 +6,8 @@ import { API_URL } from '../../config';
 import './Search.css';
 
 class Search extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       searchResults: [],
@@ -15,23 +15,17 @@ class Search extends React.Component {
       loading: false,
       req: null,
       execution: null,
-      focus: false,
+      showSearch: props.showSearch,
     }
 
     this.handleRedirect = this.handleRedirect.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.finish = this.finish.bind(this);
     this.clearExecution = this.clearExecution.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
   }
 
-  handleBlur(e) {
-    this.setState({focus: false, loading: false});
-  }
-
-  handleFocus(e) {
-    this.setState({focus: true});
+  componentWillReceiveProps(newProps) {
+    this.setState({showSearch: newProps.showSearch});
   }
 
   finish(results) {
@@ -77,7 +71,8 @@ class Search extends React.Component {
     this.setState({execution})
   }
 
-  handleRedirect(currencyId) {
+  handleRedirect(event, currencyId) {
+    event.preventDefault();
     this.clearExecution();
     if (this.state.req) {
       this.state.req.abort();
@@ -89,9 +84,9 @@ class Search extends React.Component {
   }
 
   renderSearchResults() {
-    const { searchResults, searchQuery, loading, focus } = this.state;
+    const { searchResults, searchQuery, loading, showSearch } = this.state;
 
-    if (!searchQuery || !focus) {
+    if (!searchQuery || !showSearch) {
       return '';
     }
     
@@ -99,13 +94,14 @@ class Search extends React.Component {
       return (
         <div className="Search-result-container">
           {searchResults.map(result =>
-            <div
-              key={result.id}
-              className="Search-result"
-              onMouseDown={() => this.handleRedirect(result.id)}
-            >
-              {result.name} ({result.symbol})
-            </div>
+            <a href={"/currency/" + result.id}
+             key={result.id}
+             onClick={(e) => this.handleRedirect(e, result.id)}
+             className='Search-noDecor'>
+              <div className="Search-result">
+                {result.name} ({result.symbol})
+              </div>
+            </a>
           )}
         </div>
       )
@@ -131,8 +127,6 @@ class Search extends React.Component {
           <span className="Search-icon" />
           <input 
             onChange={this.handleChange}
-            onBlur={this.handleBlur}
-            onFocus={this.handleFocus}
             type="text"
             className="Search-input"
             placeholder="Currency name"

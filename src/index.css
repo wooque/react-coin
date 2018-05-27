@@ -13,6 +13,18 @@ body {
   font-weight: 300;
 }
 
+html, body {
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+.outer {
+  height: 100%;
+}
+
 .percent-raised {
   color: #3cd483;
 }

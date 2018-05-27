@@ -27,7 +27,12 @@ const Table = (props) => {
               <td>
                 <span className="Table-rank">{currency.rank}</span>
               </td>
-              <td>{currency.name}</td>
+              <td>
+                <a href={"/currency/" + currency.id} 
+                onClick={(e) => e.preventDefault()}>
+                  {currency.name}
+                </a>
+              </td>
               <td>
                 <span className="Table-dollar">$</span>
                 {currency.price}

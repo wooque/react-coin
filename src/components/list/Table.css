@@ -32,6 +32,11 @@
   cursor: pointer;
 }
 
+.Table-body td a {
+  color: #fff;
+  text-decoration: none;
+}
+
 .Table-rank {
   color: #9cb3c9;
   font-size: 12px;

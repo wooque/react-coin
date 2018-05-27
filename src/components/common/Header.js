@@ -4,14 +4,14 @@ import Search from './Search';
 import logo from './logo.png';
 import './Header.css';
 
-const Header = () => {
+const Header = (props) => {
   return (
     <div className="Header">
       <Link to="/">
         <img src={logo} alt="logo" className="Header-logo" />
       </Link>
 
-      <Search />
+      <Search showSearch={props.showSearch}/>
     </div>
   );
 }

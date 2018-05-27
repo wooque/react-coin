@@ -73,6 +73,10 @@
   cursor: pointer;
 }
 
+.Search-noDecor {
+  text-decoration: none;
+}
+
 .Search-result:hover {
   color: #fff;
 }
