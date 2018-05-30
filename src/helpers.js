@@ -1,6 +1,9 @@
 import React from 'react';
 
 export const handleResponse = (response) => {
+  if (!response) {
+    return;
+  }
   return response.json()
     .then(json => {
       if (response.ok) {
@@ -21,20 +24,45 @@ export const renderChangePercent = (changePercent) => {
   }
 }
 
-export const ajax = (url) => {
-  let req = new XMLHttpRequest();
-  req.open('GET', url, true);
+export class Debouncer {
+  constructor(debounce) {
+    this.debounce = debounce;
+    this.execution = null;
+    this.lastExecuted = null;
+  }
 
-  let promise = new Promise((resolve, reject) => {
-    req.onreadystatechange = function () {
-        if (req.readyState === 4 && req.status === 200) {
-          resolve(JSON.parse(req.responseText));
+  cancelExecution() {
+    if (this.execution) {
+      clearTimeout(this.execution);
+    }
+    this.execution = null;
+    this.lastExecuted = null;
+  }
+
+  execute(func) {
+    let that = this;
+    return new Promise((resolve, reject) => {
+      if (that.execution) {
+        return;
+      }
+      let execution = setTimeout(() => {
+        that.cancelExecution();
+        let promiseOrValue = func();
+        if (promiseOrValue && typeof promiseOrValue.then === 'function') {
+          that.lastExecuted = promiseOrValue;
+          promiseOrValue.then((value) => {
+            if (that.lastExecuted !== promiseOrValue) {
+              return;
+            }
+            resolve(value);
+          }).catch((e) => {
+            reject(e);
+          });
+        } else {
+          resolve(promiseOrValue);
         }
-    }
-    req.onerror = function () {
-      reject(JSON.parse(req.responseText));
-    }
-    req.send();
-  });
-  return {promise, req};
+      }, that.debounce);
+      that.execution = execution;
+    })
+  }
 }

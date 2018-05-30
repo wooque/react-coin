@@ -1,6 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { ajax } from '../../helpers.js';
+import { Debouncer, handleResponse } from '../../helpers.js';
 import Loading from '../common/Loading';
 import { API_URL } from '../../config';
 import './Search.css';
@@ -10,18 +10,15 @@ class Search extends React.Component {
     super(props);
 
     this.state = {
-      searchResults: [],
+      searchResults: null,
       searchQuery: '',
       loading: false,
-      req: null,
-      execution: null,
       showSearch: props.showSearch,
     }
-
+    this.debouncer = new Debouncer(300);
     this.handleRedirect = this.handleRedirect.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.finish = this.finish.bind(this);
-    this.clearExecution = this.clearExecution.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
@@ -32,43 +29,20 @@ class Search extends React.Component {
     this.setState({
       searchResults: results,
       loading: false,
-      req: null,
     });
-  }
-
-  clearExecution() {
-    if (this.state.execution) {
-      clearTimeout(this.state.execution);
-    }
-    this.setState({execution: null});
   }
 
   handleChange(e) {
     const searchQuery = e.target.value;
     this.setState({ searchQuery });
-
-    if (this.state.execution) {
-      return false;
-    }
-
-    if (this.state.req) {
-      this.state.req.abort();
-      this.finish([]);
-    }
-    this.setState({ loading: true });
-
-    let execution = setTimeout(() => {
-      this.clearExecution();
-      let searchQuery = this.state.searchQuery;
-      if (!searchQuery) {
-        this.finish([]);
+    this.debouncer.execute(() => {
+      if (!this.state.searchQuery) {
         return;
       }
-      let {promise, req} = ajax(`${API_URL}/autocomplete?searchQuery=${searchQuery}`);
-      this.setState({req});
-      promise.then(this.finish);
-    }, 300);
-    this.setState({execution})
+      this.setState({ loading: true });
+      return fetch(`${API_URL}/autocomplete?searchQuery=${this.state.searchQuery}`);
+    }).then(handleResponse)
+    .then(this.finish);
   }
 
   handleRedirect(event, currencyId) {
@@ -76,10 +50,7 @@ class Search extends React.Component {
       return;
     }
     event.preventDefault();
-    this.clearExecution();
-    if (this.state.req) {
-      this.state.req.abort();
-    }
+    this.debouncer.cancelExecution();
     this.finish([]);
     this.setState({searchQuery: ''});
 
@@ -89,7 +60,7 @@ class Search extends React.Component {
   renderSearchResults() {
     const { searchResults, searchQuery, loading, showSearch } = this.state;
 
-    if (!searchQuery || !showSearch) {
+    if (!searchQuery || !showSearch || searchResults == null) {
       return '';
     }
     

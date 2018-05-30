@@ -55,7 +55,7 @@ class Detail extends React.Component {
     const { currency, loading, error } = this.state;
 
     if (loading) {
-      return <div className="loading-container"><Loading wait={false}/></div>
+      return <div className="loading-container"><Loading/></div>
     }
 
     if (error) {
