@@ -3,16 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
+    "react-app-rewired": "^1.5.2",
     "react-scripts": "^1.1.4"
   },
   "dependencies": {
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0",
+    "preact": "^8.2.9",
+    "preact-compat": "^3.18.0",
     "react-router-dom": "^4.2.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
