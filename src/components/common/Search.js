@@ -28,6 +28,9 @@ class Search extends React.Component {
   }
 
   finish(results) {
+    if (results) {
+      results = results.slice(0, 5);
+    }
     this.setState({
       searchResults: results,
       loading: false,
@@ -48,16 +51,27 @@ class Search extends React.Component {
   }
 
   handleKeyDown(e) {
-    let selected = this.state.selected;
-    if (e.nativeEvent.keyCode === 38) {
-      e.preventDefault();
-      if (selected > 0) {
-        this.setState({selected: selected - 1});
-      }
-    } else if (e.nativeEvent.keyCode === 40) {
-      e.preventDefault();
-      this.setState({selected: selected + 1});
+    let keyCode = e.nativeEvent.keyCode;
+    
+    // ENTER
+    if (keyCode === 13) {
+      let currency = this.state.searchResults[this.state.selected].id;
+      return this.handleRedirect(e, currency);
     }
+
+    // != UP and DOWN
+    if (keyCode !== 38 && keyCode !== 40) {
+      return;
+    }
+    e.preventDefault();
+
+    let newSelected = this.state.selected;
+    if (keyCode === 38 && newSelected > 0) {
+      newSelected--;
+    } else if (keyCode === 40 && newSelected < this.state.searchResults.length - 1) {
+      newSelected++;
+    }
+    this.setState({selected: newSelected});
   }
 
   handleRedirect(event, currencyId) {
@@ -66,8 +80,11 @@ class Search extends React.Component {
     }
     event.preventDefault();
     this.debouncer.cancelExecution();
-    this.finish([]);
-    this.setState({searchQuery: ''});
+    this.finish(null);
+    this.setState({
+      searchQuery: '',
+      selected: -1,
+    });
 
     this.props.history.push(`/currency/${currencyId}`);
   }
@@ -87,7 +104,7 @@ class Search extends React.Component {
              key={result.id}
              onClick={(e) => this.handleRedirect(e, result.id)}
              className='Search-noDecor'>
-              <div className={"Search-result "  + (this.state.selected == index? 'Search-selected': '')}>
+              <div className={"Search-result "  + (this.state.selected === index? 'Search-selected': '')}>
                 {result.name} ({result.symbol})
               </div>
             </a>
