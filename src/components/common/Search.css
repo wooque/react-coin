@@ -81,6 +81,10 @@
   color: #fff;
 }
 
+.Search-selected {
+  color: #fff;
+}
+
 .Search-no-result {
   color: #9cb3c9;
   padding: 15px 0 15px 35px;

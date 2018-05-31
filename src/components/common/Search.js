@@ -14,9 +14,11 @@ class Search extends React.Component {
       searchQuery: '',
       loading: false,
       showSearch: props.showSearch,
+      selected: -1,
     }
     this.debouncer = new Debouncer(300);
     this.handleRedirect = this.handleRedirect.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.finish = this.finish.bind(this);
   }
@@ -45,6 +47,19 @@ class Search extends React.Component {
     .then(this.finish);
   }
 
+  handleKeyDown(e) {
+    let selected = this.state.selected;
+    if (e.nativeEvent.keyCode === 38) {
+      e.preventDefault();
+      if (selected > 0) {
+        this.setState({selected: selected - 1});
+      }
+    } else if (e.nativeEvent.keyCode === 40) {
+      e.preventDefault();
+      this.setState({selected: selected + 1});
+    }
+  }
+
   handleRedirect(event, currencyId) {
     if (event.ctrlKey) {
       return;
@@ -67,12 +82,12 @@ class Search extends React.Component {
     if (searchResults.length > 0) {
       return (
         <div className="Search-result-container">
-          {searchResults.map(result =>
+          {searchResults.map((result, index) =>
             <a href={"/currency/" + result.id}
              key={result.id}
              onClick={(e) => this.handleRedirect(e, result.id)}
              className='Search-noDecor'>
-              <div className="Search-result">
+              <div className={"Search-result "  + (this.state.selected == index? 'Search-selected': '')}>
                 {result.name} ({result.symbol})
               </div>
             </a>
@@ -101,6 +116,7 @@ class Search extends React.Component {
           <span className="Search-icon" />
           <input 
             onChange={this.handleChange}
+            onKeyDown={this.handleKeyDown}
             type="text"
             className="Search-input"
             placeholder="Currency name"
