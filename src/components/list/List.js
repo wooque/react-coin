@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { API_URL } from '../../config';
-import { handleResponse } from '../../helpers.js';
+import { Debouncer, handleResponse } from '../../helpers.js';
 import Pagination from './Pagination';
 import Loading from '../common/Loading';
 import Table from './Table';
@@ -19,6 +19,8 @@ class List extends React.Component {
       error: '',
     };
 
+    this.debouncer = new Debouncer(100);
+    this.loaderTimeout = null;
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
   }
 
@@ -29,14 +31,17 @@ class List extends React.Component {
   fetchCurrencies() {
     const { page, perPage } = this.state;
 
-    let timeout = setTimeout(() => this.setState({ loading: true}), 200);
-
-    fetch(`${API_URL}/cryptocurrencies/?page=${page}&perPage=${perPage}`)
-      .then(handleResponse)
+    this.debouncer.execute(() => {
+      this.loaderTimeout = setTimeout(
+        () => this.setState({ loading: true}), 
+        200,
+      );
+      return fetch(`${API_URL}/cryptocurrencies/?page=${page}&perPage=${perPage}`);
+    }).then(handleResponse)
       .then((data) => {
         const { totalPages, currencies } = data;
 
-        clearTimeout(timeout);
+        clearTimeout(this.loaderTimeout);
         this.setState({
           currencies,
           totalPages,
@@ -45,7 +50,7 @@ class List extends React.Component {
         });
       })
       .catch((error) => {
-        clearTimeout(timeout);
+        clearTimeout(this.loaderTimeout);
         this.setState({
           error: error.errorMessage || error.message,
           loading: false,
