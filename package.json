@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
-    "react-scripts": "1.1.4",
-    "serve": "^6.5.8"
+    "react-scripts": "^1.1.4"
   },
   "dependencies": {
     "react": "^16.4.0",

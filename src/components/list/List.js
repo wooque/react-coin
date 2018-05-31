@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { API_URL } from '../../config';
-import { Debouncer, handleResponse } from '../../helpers.js';
+import { handleResponse } from '../../helpers.js';
 import Pagination from './Pagination';
 import Loading from '../common/Loading';
 import Table from './Table';
@@ -16,10 +16,10 @@ class List extends React.Component {
       perPage: 10,
       currencies: [],
       loading: false,
+      showLoading: false,
       error: '',
     };
 
-    this.debouncer = new Debouncer(100);
     this.loaderTimeout = null;
     this.handlePaginationClick = this.handlePaginationClick.bind(this);
   }
@@ -31,31 +31,34 @@ class List extends React.Component {
   fetchCurrencies() {
     const { page, perPage } = this.state;
 
-    this.debouncer.execute(() => {
-      this.loaderTimeout = setTimeout(
-        () => this.setState({ loading: true}), 
-        200,
-      );
-      return fetch(`${API_URL}/cryptocurrencies/?page=${page}&perPage=${perPage}`);
-    }).then(handleResponse)
-      .then((data) => {
-        const { totalPages, currencies } = data;
+    this.setState({loading: true});
+    this.loaderTimeout = setTimeout(
+      () => this.setState({ showLoading: true}), 
+      100,
+    );
+    
+    return fetch(`${API_URL}/cryptocurrencies/?page=${page}&perPage=${perPage}`)
+    .then(handleResponse)
+    .then((data) => {
+      const { totalPages, currencies } = data;
 
-        clearTimeout(this.loaderTimeout);
-        this.setState({
-          currencies,
-          totalPages,
-          error: '',
-          loading: false,
-        });
-      })
-      .catch((error) => {
-        clearTimeout(this.loaderTimeout);
-        this.setState({
-          error: error.errorMessage || error.message,
-          loading: false,
-        });
+      clearTimeout(this.loaderTimeout);
+      this.setState({
+        currencies,
+        totalPages,
+        error: '',
+        loading: false,
+        showLoading: false,
       });
+    })
+    .catch((error) => {
+      clearTimeout(this.loaderTimeout);
+      this.setState({
+        error: error.errorMessage || error.message,
+        loading: false,
+        showLoading: false,
+      });
+    });
   }
 
   handlePaginationClick(direction) {
@@ -74,7 +77,7 @@ class List extends React.Component {
   }
 
   render() {
-    const { currencies, loading, error, page, totalPages } = this.state;
+    const { currencies, loading, showLoading, error, page, totalPages } = this.state;
 
     if (error) {
       return <div className="error">{error}</div>
@@ -86,8 +89,8 @@ class List extends React.Component {
 
     return (
       <div>
-        {loading && <div className="loading-container" style={{height: "660px"}}><Loading/></div>}
-        {!loading && <Table currencies={currencies} />}
+        {showLoading && <div className="loading-container" style={{height: "660px"}}><Loading/></div>}
+        {!showLoading && <Table currencies={currencies} />}
 
         <Pagination
           page={page}
