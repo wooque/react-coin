@@ -43,6 +43,7 @@ class List extends React.Component {
       const { totalPages, currencies } = data;
 
       clearTimeout(this.loaderTimeout);
+      document.title = `React Coin (${page}/${totalPages})`;
       this.setState({
         currencies,
         totalPages,
@@ -53,6 +54,7 @@ class List extends React.Component {
     })
     .catch((error) => {
       clearTimeout(this.loaderTimeout);
+      document.title = 'Error';
       this.setState({
         error: error.errorMessage || error.message,
         loading: false,

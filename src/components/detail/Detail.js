@@ -36,6 +36,7 @@ class Detail extends React.Component {
       .then(handleResponse)
       .then((currency) => {
         clearTimeout(timeout);
+        document.title = currency.name;
         this.setState({
           currency,
           error: '',
@@ -44,6 +45,7 @@ class Detail extends React.Component {
       })
       .catch((error) => {
         clearTimeout(timeout);
+        document.title = 'Error';
         this.setState({
           error: error.errorMessage,
           loading: false,
